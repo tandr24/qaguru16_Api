@@ -14,6 +14,8 @@ public class TestBase {
         Configuration.timeout = 5000;
         Configuration.browserSize = System.getProperty("windowSize", "1920x1080");
         Configuration.remote = System.getProperty("remote");
+        Configuration.browser = "chrome";
+        Configuration.browserVersion =("128.0");
     }
 
     @AfterEach
