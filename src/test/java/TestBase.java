@@ -13,10 +13,11 @@ public class TestBase {
         Configuration.pageLoadStrategy = "eager";
         Configuration.timeout = 5000;
         Configuration.browserSize = System.getProperty("windowSize", "1920x1080");
+        Configuration.remote = System.getProperty("remote");
     }
 
     @AfterEach
-    void shutDown(){
+    void shutDown() {
         closeWebDriver();
     }
 }
