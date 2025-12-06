@@ -17,10 +17,9 @@ import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
-import static helpers.CustomApiListener.withCustomTemplates;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
+import static specs.DemoQASpecs.*;
 
 public class DemoQaBookShopTests extends TestBase {
 
@@ -33,17 +32,14 @@ public class DemoQaBookShopTests extends TestBase {
 
         Response responseLogin = step("Log in with username and password", () ->
                 given()
-                        .filter(withCustomTemplates())
-                        .log().all()
-                        .contentType(JSON)
+                        .spec(loginRequestSpec)
                         .body(login)
                         .when()
                         .post("/Account/v1/Login")
                         .then()
-                        .log().all()
-                        .statusCode(200))
-                .extract()
-                .response();
+                        .spec(responseSpec(200))
+                        .extract()
+                        .response());
 
         IsbnDTO isbn = new IsbnDTO();
         isbn.setIsbn("9781449325862");
@@ -57,32 +53,25 @@ public class DemoQaBookShopTests extends TestBase {
 
         step("Add book to cart", () ->
                 given()
-                        .filter(withCustomTemplates())
-                        .log().all()
+                        .spec(loginRequestSpec)
                         .header("Authorization", "Bearer " + responseLogin.path("token"))
-                        .contentType(JSON)
                         .body(newBook)
                         .when()
                         .post("/BookStore/v1/Books")
                         .then()
-                        .log().all()
-                        .statusCode(201))
-                .extract()
-                .response();
+                        .spec(responseSpec(201)));
 
         GetCartAnswerDTO responseGetUserByID = step("Get Cart info", () ->
                 given()
-                        .filter(withCustomTemplates())
-                        .log().all()
+                        .spec(loginRequestSpec)
                         .header("Authorization", "Bearer " + responseLogin.path("token"))
-                        .contentType(JSON)
                         .when()
                         .get("/Account/v1/User/" + responseLogin.path("userId"))
                         .then()
-                        .log().all()
-                        .statusCode(200))
-                .extract()
-                .as(GetCartAnswerDTO.class);
+                        .spec(responseSpec(200))
+                        .extract()
+                        .as(GetCartAnswerDTO.class));
+
 
         step("Verify that cart has items to delete", () ->
                 Assertions.assertEquals(1, responseGetUserByID.getBooks().size()));
@@ -96,7 +85,6 @@ public class DemoQaBookShopTests extends TestBase {
             getWebDriver().manage().addCookie(new Cookie("token", responseLogin.path("token")));
         });
 
-
         step("Open Cart", () ->
 
                 open("/profile"));
@@ -109,21 +97,17 @@ public class DemoQaBookShopTests extends TestBase {
         step("Verify that no items in cart via UI", () ->
                 $("#app").shouldHave(text("No rows found")));
 
-
         GetCartAnswerDTO responseGetUserByIDAfterDeletion = step("Get cart info via API", () ->
                 given()
-                        .filter(withCustomTemplates())
-                        .log().all()
+                        .spec(loginRequestSpec)
                         .header("Authorization", "Bearer " + responseLogin.path("token"))
-                        .contentType(JSON)
                         .when()
                         .get("/Account/v1/User/" + responseLogin.path("userId"))
                         .then()
-                        .log().all()
-                        .statusCode(200))
-                .extract().as(GetCartAnswerDTO.class);
+                        .spec(responseSpec(200))
+                        .extract().as(GetCartAnswerDTO.class));
 
-        step("Verify that no items in cart via UI", () ->
+        step("Verify that no items in cart via API", () ->
                 Assertions.assertEquals(0, responseGetUserByIDAfterDeletion.getBooks().size()));
     }
 }
