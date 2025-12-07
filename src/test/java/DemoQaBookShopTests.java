@@ -51,6 +51,15 @@ public class DemoQaBookShopTests extends TestBase {
         newBook.setUserId(responseLogin.path("userId"));
         newBook.setCollectionOfIsbns(book);
 
+        step("Delete all books in cart via API", () ->
+                given()
+                        .spec(loginRequestSpec)
+                        .header("Authorization", "Bearer " + responseLogin.path("token"))
+                        .when()
+                        .delete("/BookStore/v1/Books/?UserId=" +responseLogin.path("userId"))
+                        .then()
+                        .spec(responseSpec(204)));
+
         step("Add book to cart", () ->
                 given()
                         .spec(loginRequestSpec)
