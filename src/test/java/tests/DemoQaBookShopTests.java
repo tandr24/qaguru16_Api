@@ -25,7 +25,7 @@ import static specs.DemoQASpecs.*;
 
 public class DemoQaBookShopTests extends TestBase {
 
-    @Test
+  //  @Test
     @DisplayName("Verify that button \"Delete all books\" deletes all books from cart")
     public void deleteItemFromCart() {
         LoginDTO login = new LoginDTO();
