@@ -1,3 +1,5 @@
+package tests;
+
 import dto.GetCartAnswerDTO;
 import dto.OrderBookAnswerDTO;
 import dto.IsbnDTO;
@@ -56,7 +58,7 @@ public class DemoQaBookShopTests extends TestBase {
                         .spec(loginRequestSpec)
                         .header("Authorization", "Bearer " + responseLogin.path("token"))
                         .when()
-                        .delete("/BookStore/v1/Books/?UserId=" +responseLogin.path("userId"))
+                        .delete("/BookStore/v1/Books/?UserId=" + responseLogin.path("userId"))
                         .then()
                         .spec(responseSpec(204)));
 
